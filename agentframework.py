@@ -14,6 +14,7 @@ class Agent:
         self.elevation = elevation
         self.agents = agents
         
+        
     def __str__(self):
         return ("id=" + str(self.id) + ", x=" + str(self.x) + ", y=" + str(self.y) + 
                 ", store =" + str(self.store) + ", count =" + str(self.count))
@@ -59,7 +60,11 @@ class Agent:
                 self.store = avg
                 i.store = avg
     
-           
+    def check_distance(self):
+        distances = []
+        for i in self.agents:
+            distances.append(self.distance_between(i))
+            return min(distances)
     
 
 
@@ -80,6 +85,7 @@ class Agent:
             The new coordinate number (either the same or larger or smaller)
 
         """
+ 
         if rn.random() <0.33:
             return xory
         if rn.random() <0.5:
@@ -88,7 +94,7 @@ class Agent:
         else:
             xory = (xory - rn.randint(1, s)) % 250
         return xory
-            
+        
     def move(self, s = 1):
         """
         Move function
@@ -103,15 +109,18 @@ class Agent:
         None.
 
         """
-        x = self.move_xory(self.x, s)
-        y = self.move_xory(self.y, s)
-        dif = abs(self.elevation[self.y][self.x] - self.elevation[y][x])
-        print(str(self.elevation[self.y][self.x]) + ", " + str(self.elevation[y][x]) + ", "  + str(dif))
-        if dif < 50:
-            self.x = x
-            self.y = y
-            if self.store > s:
-                self.store = self.store - (s-1)
+        d = self.check_distance()
+        print(d)
+        if d > 100:
+            x = self.move_xory(self.x, s) #hypothetical new position
+            y = self.move_xory(self.y, s) #
+            dif = abs(self.elevation[self.y][self.x] - self.elevation[y][x])# difference in elevation of new and current position 
+            #print(str(self.elevation[self.y][self.x]) + ", " + str(self.elevation[y][x]) + ", "  + str(dif))
+            if dif < 5: # if difference is low then move is made
+                self.x = x
+                self.y = y
+                if self.store > s:
+                    self.store = self.store - (s-1) # movement costs calories
         
     def eat(self): # can you make it eat what is left?
         if self.environment[self.y][self.x] > 20 and rn.random() < 0.8:
@@ -126,9 +135,9 @@ class Agent:
             self.environment[self.y-1][self.x+1] -=3
             self.environment[self.y+1][self.x-1] -=3
            
-        else:
+        else: # eat what is left of the grass
             a = self.environment[self.y][self.x]
-            self.store + (a/2)
+            self.store + (a/2) # half calories lost to mastication
             a - a
             
            
@@ -139,7 +148,7 @@ class Agent:
         if self.store >150:
             self.environment[self.y][self.x] += 100 # some data eaten is non-digestible
             self.store = 10
-            self.count = self.count + 1
+            self.count = self.count + 1 # no. of bowel movements
 """        
 if ((self.environment[self.y][self.x] - self.environment[self.y][self.x - 1] > 4) or 
     (self.environment[self.y][self.x] - self.environment[self.y][self.x + 1] > 4) or
