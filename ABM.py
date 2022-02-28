@@ -81,9 +81,9 @@ def run():
 
 ### create GUI window
 root = tkinter.Tk() # main window
-w = tkinter.Canvas(root, width=200, height=200)
-w.pack() # Layout
-w.create_rectangle(0, 0, 200, 200, fill="blue")
+#w = tkinter.Canvas(root, width=200, height=200)
+#w.pack() # Layout
+#w.create_rectangle(0, 0, 200, 200, fill="blue")
 root.wm_title("Model")
 canvas = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(fig, master=root)
 canvas._tkcanvas.pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
