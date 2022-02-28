@@ -148,6 +148,7 @@ class Agent:
         if self.environment[self.y][self.x] > 20 and rn.random() < 0.8:
             self.environment[self.y][self.x] -= 20
             self.store += 10 # half calories lost to life processes 
+            """
             self.environment[self.y-1][self.x-1] -=3
             self.environment[self.y][self.x-1] -=3
             self.environment[self.y-1][self.x] -=3
@@ -156,7 +157,7 @@ class Agent:
             self.environment[self.y][self.x+1] -=3
             self.environment[self.y-1][self.x+1] -=3
             self.environment[self.y+1][self.x-1] -=3
-           
+            """
         else: # eat what is left of the grass
             a = self.environment[self.y][self.x]
             self.store + (a/2) # half calories lost to mastication

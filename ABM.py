@@ -76,7 +76,7 @@ matplotlib.pyplot.show()
 """
 
 def run():
-    animation = matplotlib.animation.FuncAnimation(fig, update, frames=gen_function, repeat=False)
+    animation = matplotlib.animation.FuncAnimation(fig, update, frames=num_of_iterations, repeat=False)
     canvas.draw() 
 
 ### create GUI window
