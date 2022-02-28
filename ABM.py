@@ -12,11 +12,11 @@ import matplotlib.animation
 ## random seed
 rn.seed(20)
 ## Number of agents variable:
-num_of_agents = 18
+num_of_agents = 30
 num_of_sheepdogs = 1
 ## Number of iterations variable
 num_of_iterations = 500
-neighbourhood = 15
+neighbourhood = 20
 ## Possible speed variable
 s = 3
 ## create empty envirnment and elevation lists
@@ -37,8 +37,8 @@ with open('env.csv', newline="") as e:
             rowlist.append(value)
         environment.append(rowlist)
         #elevation.append(rowlist)
-    matplotlib.pyplot.imshow(environment)
-    matplotlib.pyplot.show()
+    #matplotlib.pyplot.imshow(environment)
+    #matplotlib.pyplot.show()
 e.close()
 
 ## copy environment list to keep a list of elevations
@@ -76,14 +76,12 @@ matplotlib.pyplot.show()
 """
 
 def run():
-    animation = matplotlib.animation.FuncAnimation(fig, update, frames=gen_function, repeat=False)
+    animation = matplotlib.animation.FuncAnimation(fig, update, frames=num_of_iterations, repeat=False)
     canvas.draw() 
 
 ### create GUI window
 root = tkinter.Tk() # main window
 w = tkinter.Canvas(root, width=200, height=200)
-w.pack() # Layout
-w.create_rectangle(0, 0, 200, 200, fill="blue")
 root.wm_title("Model")
 canvas = matplotlib.backends.backend_tkagg.FigureCanvasTkAgg(fig, master=root)
 canvas._tkcanvas.pack(side=tkinter.TOP, fill=tkinter.BOTH, expand=1)
