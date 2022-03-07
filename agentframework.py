@@ -11,12 +11,13 @@ class Agent:
         self.elevation = elevation
         self.agents = agents
         self.sheep_dog = sheep_dog
+        self.living = 1
         
         
         
     def __str__(self):
         return ("id=" + str(self.id) + ", x=" + str(self.x) + ", y=" + str(self.y) + 
-                ", store =" + str(self.store) + ", count =" + str(self.count))
+                ", store =" + str(self.store) + ", count =" + str(self.count) + ", Living =" + str(self.living))
     
     def distance_between(self, agent):
             """
@@ -58,6 +59,15 @@ class Agent:
                 i.store = avg
     
     def check_distance(self):
+        """
+        Funtion that checks how close the nearest other agent is from self
+
+        Returns
+        -------
+        Number
+            Value for the distance of the closest other agent
+
+        """
         distances = []
         for i in self.agents:
             distances.append(self.distance_between(i))
@@ -102,10 +112,13 @@ class Agent:
         
     def move(self, neighbourhood, dog, s = 1):
         """
-        Move function
+        Move function. Checks distance between self and dog, if dog is too close then self moves in the opposite direction from dog.
+        Checks if elevation difference is to high to move in a random direction. Checks if other agents are within neighbourhood, if so
+        then agent movement speed and chance to move is lowered.
 
         Parameters
         ----------
+        neighbourhood : The distance agents check other agents are within
         s : Speed, optional
             DESCRIPTION. The default is 1.
 
@@ -114,33 +127,38 @@ class Agent:
         None.
 
         """
-        if self.distance_between(dog) > 40:
-            min_d = self.check_distance() ## check for nearest sheep
-            self.eat() ## eat before moving
-            if min_d > neighbourhood: ## if nearest sheep is futher than neighbourhood then move freely
-                x = self.move_xory(self.x, s) #hypothetical new position
-                y = self.move_xory(self.y, s) #
+        if self.living > 0:
+            if self.distance_between(dog) > 80:
+                min_d = self.check_distance() ## check for nearest sheep
+                self.eat() ## eat before moving
+                if min_d > neighbourhood: ## if nearest sheep is futher than neighbourhood then move freely
+                    x = self.move_xory(self.x, s) #hypothetical new position
+                    y = self.move_xory(self.y, s) #
+                    dif = abs(self.elevation[self.y][self.x] - self.elevation[y][x])# difference in elevation of new and current position 
+                    if dif < 5: # if difference in elevation is low then move is made
+                        self.x = x
+                        self.y = y
+                        if self.store > s:
+                            self.store = self.store - (s-1) # movement costs calories
+                if min_d <= neighbourhood and rn.random() >0.6: ## if a sheep is nearby then less likely to move and go slower
+                   x = self.move_xory(self.x, 1) #hypothetical new position
+                   y = self.move_xory(self.y, 1) #
+                   dif = abs(self.elevation[self.y][self.x] - self.elevation[y][x])# difference in elevation of new and current position 
+                   if dif < 5: # if difference in elevation is low then move is made
+                       self.x = x
+                       self.y = y
+                       if self.store > s:
+                           self.store = self.store - (s-1) # movement costs calories
+                           
+            else:
+                x = self.move_away(self.x, dog.x, s) #hypothetical new position
+                y = self.move_away(self.y, dog.y, s)
                 dif = abs(self.elevation[self.y][self.x] - self.elevation[y][x])# difference in elevation of new and current position 
-                #print(str(self.elevation[self.y][self.x]) + ", " + str(self.elevation[y][x]) + ", "  + str(dif))
-                if dif < 5: # if difference in elevation is low then move is made
+                if dif < 6: # if difference in elevation is low then move is made (higher than in grazing because they are being chased)
                     self.x = x
                     self.y = y
-                    if self.store > s:
-                        self.store = self.store - (s-1) # movement costs calories
-            if min_d <= neighbourhood and rn.random() >0.6: ## if a sheep is nearby then less likely to move and go slower
-               x = self.move_xory(self.x, 1) #hypothetical new position
-               y = self.move_xory(self.y, 1) #
-               dif = abs(self.elevation[self.y][self.x] - self.elevation[y][x])# difference in elevation of new and current position 
-               #print(str(self.elevation[self.y][self.x]) + ", " + str(self.elevation[y][x]) + ", "  + str(dif))
-               if dif < 5: # if difference in elevation is low then move is made
-                   self.x = x
-                   self.y = y
-                   if self.store > s:
-                       self.store = self.store - (s-1) # movement costs calories
-                       
-        else:
-            self.x = self.move_away(self.x, dog.x, s)
-            self.y = self.move_away(self.y, dog.y, s)
+                #self.x = self.move_away(self.x, dog.x, s)
+                #self.y = self.move_away(self.y, dog.y, s)
             
            
         
@@ -171,17 +189,13 @@ class Agent:
             self.environment[self.y][self.x] += 100 # some data eaten is non-digestible
             self.store = 10
             self.count = self.count + 1 # no. of bowel movements
-"""        
-if ((self.environment[self.y][self.x] - self.environment[self.y][self.x - 1] > 4) or 
-    (self.environment[self.y][self.x] - self.environment[self.y][self.x + 1] > 4) or
-    (self.environment[self.y][self.x] - self.environment[self.y - 1][self.x - 1] > 4) or
-    (self.environment[self.y][self.x] - self.environment[self.y - 1][self.x + 1] > 4) or
-    (self.environment[self.y][self.x] - self.environment[self.y + 1][self.x - 1] > 4) or
-    (self.environment[self.y][self.x] - self.environment[self.y + 1][self.x + 1] > 4) or
-    (self.environment[self.y][self.x] - self.environment[self.y - 1][self.x] > 4) or
-    (self.environment[self.y][self.x] - self.environment[self.y + 1][self.x] > 4)):
+
+    def survive(self, dog):
+        if self.distance_between(dog) < 8:
+            self.store = self.store - 20
         
-    
+        if self.store < 0:
+            self.store = 0
+            self.living = 0
             
- """           
             

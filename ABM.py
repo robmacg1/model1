@@ -10,12 +10,13 @@ import dog
 import matplotlib.animation
 
 ## random seed
-rn.seed(20)
+rn.seed(30)
 ## Number of agents variable:
-num_of_agents = 30
+num_of_agents = 75
 num_of_sheepdogs = 1
 ## Number of iterations variable
 num_of_iterations = 500
+## Distance sheep share with each other and flock together
 neighbourhood = 20
 ## Possible speed variable
 s = 3
@@ -37,7 +38,7 @@ with open('env.csv', newline="") as e:
             rowlist.append(value)
         environment.append(rowlist)
         #elevation.append(rowlist)
-    #matplotlib.pyplot.imshow(environment)
+    matplotlib.pyplot.imshow(environment)
     #matplotlib.pyplot.show()
 e.close()
 
@@ -92,27 +93,36 @@ model_menu = tkinter.Menu(menu)
 menu.add_cascade(label="Model", menu=model_menu)
 model_menu.add_command(label="Run model", command=run)
 
-
+def grow():
+    for row in environment:
+        for value in row:
+            #print(value)
+            value = value +30
+    
+    
  
-## Randomly move each agent, make them eat and plot the new environment 
+## Randomly move each agent depending on elevation, make them eat, share and plot the new environment.  
 def update(frame_number):
     
     fig.clear()   
     global carry_on
-    rn.shuffle(agents)
+    for row in environment:
+        for value in row:
+            #print(value)
+            value = value +30
+            #print(value)
+    #rn.shuffle(agents)
     matplotlib.pyplot.xlim(0, 299)
     matplotlib.pyplot.ylim(0, 299)
     matplotlib.pyplot.imshow(environment, vmin = 0, vmax = 255)
-    #for i in range(num_of_iterations):
-    a = sheep_dog[0].find_closest() # Sheep dog determines closest sheep
-    sheep_dog[0].hunt(agents[a], s*0.8) # Sheep dog chases closest sheep
+    a = sheep_dog[0].find_closest() # dog determines closest sheep
+    sheep_dog[0].hunt(agents[a], s * 1.5) # dog chases closest sheep
     
     for j in range(num_of_agents):
         agents[j].move(neighbourhood, sheep_dog[0], s)
-        #agents[j].eat()
-        agents[j].share_w_neighbours(neighbourhood)
-        #agents[j].check_distance()
-        #print(agents[j])
+        #agents[j].share_w_neighbours(neighbourhood)
+        agents[j].survive(sheep_dog[0])
+        
     
     if rn.random() < 0.01:
      carry_on = False
@@ -121,6 +131,8 @@ def update(frame_number):
         matplotlib.pyplot.scatter(agents[i].x,agents[i].y, c = 'white', s=agents[i].store * 0.5)
         matplotlib.pyplot.scatter(agents[a].x,agents[a].y, c = 'red', s=agents[i].store * 0.5)  # Chased sheep is colored red
     matplotlib.pyplot.scatter(sheep_dog[0].x,sheep_dog[0].y, c = 'black', s=20)
+    #for i in agents:
+        #print(i)
 
 ## create model animation stopping conditions
 def gen_function(b = [0]):

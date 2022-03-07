@@ -46,10 +46,13 @@ class Dog:
     def find_closest(self):
         distances = []
         for i in self.agents:
-            distances.append([i.id, self.distance_between(i)])    
+            if i.living > 0:
+                distances.append([i.id, self.distance_between(i)])    
         #min_d = (min(j[1]) for j in distances) ## couldn't work out how to return the corresponding id for the min distance
         df = pd.DataFrame.from_records(distances, columns=['ID','Distance']) 
-        min_d = df['Distance'].idxmin()
+        min_d = int(df.loc[df['Distance'].idxmin()]['ID'])
+        #print(df)
+        #print(min_d)
         return min_d
         
     def search(dog, agent):
