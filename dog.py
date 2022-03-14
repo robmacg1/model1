@@ -55,5 +55,3 @@ class Dog:
         #print(min_d)
         return min_d
         
-    def search(dog, agent):
-        return dog - agent

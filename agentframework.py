@@ -12,7 +12,7 @@ class Agent:
         self.agents = agents
         self.sheep_dog = sheep_dog
         self.living = 1
-        
+        self.eaten = False
         
         
     def __str__(self):
@@ -110,7 +110,7 @@ class Agent:
             xory = (xory - rn.randint(1, s)) % 299
         return xory
         
-    def move(self, neighbourhood, dog, s = 1):
+    def move(self, neighbourhood, dog, wariness = 50, s = 1):
         """
         Move function. Checks distance between self and dog, if dog is too close then self moves in the opposite direction from dog.
         Checks if elevation difference is to high to move in a random direction. Checks if other agents are within neighbourhood, if so
@@ -127,8 +127,9 @@ class Agent:
         None.
 
         """
+        self.store -= 1
         if self.living > 0:
-            if self.distance_between(dog) > 80:
+            if self.distance_between(dog) > wariness:
                 min_d = self.check_distance() ## check for nearest sheep
                 self.eat() ## eat before moving
                 if min_d > neighbourhood: ## if nearest sheep is futher than neighbourhood then move freely
@@ -140,11 +141,11 @@ class Agent:
                         self.y = y
                         if self.store > s:
                             self.store = self.store - (s-1) # movement costs calories
-                if min_d <= neighbourhood and rn.random() >0.6: ## if a sheep is nearby then less likely to move and go slower
+                if min_d <= neighbourhood and rn.random() >0.6: ## if a sheep is nearby then less likely to move and will go slower
                    x = self.move_xory(self.x, 1) #hypothetical new position
                    y = self.move_xory(self.y, 1) #
                    dif = abs(self.elevation[self.y][self.x] - self.elevation[y][x])# difference in elevation of new and current position 
-                   if dif < 5: # if difference in elevation is low then move is made
+                   if dif < 3: # if difference in elevation is low then move is made
                        self.x = x
                        self.y = y
                        if self.store > s:
@@ -163,9 +164,10 @@ class Agent:
            
         
     def eat(self): # can you make it eat what is left?
-        if self.environment[self.y][self.x] > 20 and rn.random() < 0.8:
-            self.environment[self.y][self.x] -= 20
-            self.store += 10 # half calories lost to life processes 
+        if self.environment[self.y][self.x] >= 10:
+            self.environment[self.y][self.x] -= 10
+            self.store += 5 # half calories lost to life processes 
+            '''
             self.environment[self.y-1][self.x-1] -=3
             self.environment[self.y][self.x-1] -=3
             self.environment[self.y-1][self.x] -=3
@@ -174,28 +176,32 @@ class Agent:
             self.environment[self.y][self.x+1] -=3
             self.environment[self.y-1][self.x+1] -=3
             self.environment[self.y+1][self.x-1] -=3
-
+            '''
         else: # eat what is left of the grass
             a = self.environment[self.y][self.x]
             self.store + (a/2) # half calories lost to mastication
-            a - a
-            
+            #print(self.environment[self.y][self.x], "before")
+            self.environment[self.y][self.x] -= self.environment[self.y][self.x]
+            #print(self.environment[self.y][self.x], "after") 
            
             
         #else:
         #    self.environment[self.y][self.x] +=10
             
         if self.store >150:
-            self.environment[self.y][self.x] += 100 # some data eaten is non-digestible
+            self.environment[self.y][self.x] += 100 # some grass eaten is non-digestible
             self.store = 10
-            self.count = self.count + 1 # no. of bowel movements
+            self.count += 1 # no. of bowel movements
 
     def survive(self, dog):
         if self.distance_between(dog) < 8:
-            self.store = self.store - 20
+            self.store -= 20
         
         if self.store < 0:
             self.store = 0
             self.living = 0
+            self.eaten = True
+            self.x = 500
+            self.y = 500
             
             
