@@ -11,11 +11,42 @@ class Dog:
     def __str__(self):
         return "id=" + str(self.id) + ", x=" + str(self.x) + ", y=" + str(self.y)
     
-    def hunt(self, i, s = 1):
-            self.x = self.move_xory(self.x, i.x, s)
-            self.y = self.move_xory(self.y, i.y, s)
+    def hunt(self, agent, s = 1):
+        """
+        Moves dog towards 
+
+        Parameters
+        ----------
+        agent : TYPE
+            DESCRIPTION.
+        s : TYPE, optional
+            DESCRIPTION. The default is 1.
+
+        Returns
+        -------
+        None.
+
+        """
+        self.x = self.move_xory(self.x, agent.x, s)
+        self.y = self.move_xory(self.y, agent.y, s)
         
     def move_xory(self, xory, agent, s):
+        """
+        Move coordinates
+
+        Parameters
+        ----------
+        xory : number
+            Either x or y coordinate
+        s : number
+            "speed" (max distance that a coordinate can move by)
+
+        Returns
+        -------
+        xory : number
+            The new coordinate number (either the same or larger or smaller)
+
+        """
         dist = xory - agent
         #if rn.random() <0.33:
         #    return xory

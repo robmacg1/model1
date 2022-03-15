@@ -1,10 +1,17 @@
 import random as rn
+import pandas as pd
 
 class Agent:
-    def __init__(self, i, environment, agents, elevation, sheep_dog):
+    def __init__(self, i, environment, agents, elevation, sheep_dog, y, x):
         self.id = i
-        self.x = rn.randint(0,299)
-        self.y = rn.randint(0,299)
+        if x == None:
+            self.x = rn.randint(125,175) # Starting coordinate parameter
+        else:
+            self.x = x
+        if y == None:
+            self.y = rn.randint(125,175) # Starting coordinate parameter
+        else:
+            self.y = y
         self.environment = environment
         self.store = 5
         self.count = 0
@@ -76,6 +83,23 @@ class Agent:
         
     
     def move_away(self, xory, dog, s):
+        """
+        Changes the coordinates of the agent to be further away in the opposite direction to where hte dog is located.
+
+        Parameters
+        ----------
+        xory : Number
+            x or y coordinate of the agent
+        dog : Number
+            x or y coordinate of the dog
+        s : number
+            speed variable that determines distance to move
+        Returns
+        -------
+        xory : Number
+            New coordinate that is away from the dog
+
+        """
         dist = xory - dog
         if dist > 0:
             xory = (xory + s) % 299
@@ -127,7 +151,7 @@ class Agent:
         None.
 
         """
-        self.store -= 1
+        self.store -= 0.3
         if self.living > 0:
             if self.distance_between(dog) > wariness:
                 min_d = self.check_distance() ## check for nearest sheep
@@ -136,7 +160,7 @@ class Agent:
                     x = self.move_xory(self.x, s) #hypothetical new position
                     y = self.move_xory(self.y, s) #
                     dif = abs(self.elevation[self.y][self.x] - self.elevation[y][x])# difference in elevation of new and current position 
-                    if dif < 5: # if difference in elevation is low then move is made
+                    if dif < 3: # if difference in elevation is low then move is made
                         self.x = x
                         self.y = y
                         if self.store > s:
@@ -193,15 +217,108 @@ class Agent:
             self.store = 10
             self.count += 1 # no. of bowel movements
 
-    def survive(self, dog):
+    def survive(self, dog, lifespan):
         if self.distance_between(dog) < 8:
             self.store -= 20
         
-        if self.store < 0:
+        if self.store < 0 or self.count > lifespan:
             self.store = 0
             self.living = 0
             self.eaten = True
             self.x = 500
             self.y = 500
-            
+class Dog:
+    def __init__(self, i, agents, elevation):
+        self.id = i
+        self.x = rn.randint(0, 299)
+        self.y = rn.randint(0, 299)
+        self.elevation = elevation
+        self.agents = agents
+    
+    def __str__(self):
+        return "id=" + str(self.id) + ", x=" + str(self.x) + ", y=" + str(self.y)
+    
+    def hunt(self, agent, s = 1):
+        """
+        Moves dog towards 
+
+        Parameters
+        ----------
+        agent : TYPE
+            DESCRIPTION.
+        s : TYPE, optional
+            DESCRIPTION. The default is 1.
+
+        Returns
+        -------
+        None.
+
+        """
+        self.x = self.move_xory(self.x, agent.x, s)
+        self.y = self.move_xory(self.y, agent.y, s)
+        
+    def move_xory(self, xory, agent, s):
+        """
+        Move coordinates
+
+        Parameters
+        ----------
+        xory : number
+            Either x or y coordinate
+        s : number
+            "speed" (max distance that a coordinate can move by)
+
+        Returns
+        -------
+        xory : number
+            The new coordinate number (either the same or larger or smaller)
+
+        """
+        dist = xory - agent
+        #if rn.random() <0.33:
+        #    return xory
+        if dist > 0:
+            xory = (xory - s) % 300
+        
+        else:
+            xory = (xory + s) % 300
+        return xory
+    
+    def distance_between(self, agent):
+            """
+            This is a function that calculates the distance betweeen two agents
+        
+            Parameters
+            ----------
+            a : an agent class object with x and y coordinates
+            b : an agent class object with x and y coordinates
+        
+            Returns
+            -------
+            Float
+                Euclidean distance between the 2 agents
+        
+            """
+            return (((self.x - agent.x)**2) + ((self.y - agent.y)**2))**0.5 
+        
+    def find_closest(self):
+        """
+        This function compares the distances between the dog and every other agent and returns the ID of the closest agent
+
+        Returns
+        -------
+        min_d : Number
+            id of the sheep closest to the dog
+
+        """
+        distances = []
+        for i in self.agents:
+            if i.living > 0:
+                distances.append([i.id, self.distance_between(i)])    
+        #min_d = (min(j[1]) for j in distances) ## couldn't work out how to return the corresponding id for the min distance
+        df = pd.DataFrame.from_records(distances, columns=['ID','Distance']) 
+        min_d = int(df.loc[df['Distance'].idxmin()]['ID'])
+        #print(df)
+        #print(min_d)
+        return min_d            
             
