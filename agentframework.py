@@ -1,8 +1,45 @@
+# =============================================================================
+# Agent Class Framework python script version 1.0
+# Created by Rory MacGregor
+# =============================================================================
+
+# =============================================================================
+# Import librarys
+# =============================================================================
 import random as rn
 import pandas as pd
 
-class Agent:
+# =============================================================================
+# Create Agent Class and define its functions
+# =============================================================================
+class Agent: # Class object for the agents (sheep in this case).
     def __init__(self, i, environment, agents, elevation, sheep_dog, y, x):
+        """
+        This is the init function for the agent class, it defines the initial parameters when a new object
+        of this class is created.
+
+        Parameters
+        ----------
+        i : Number
+            number used to assign id to agent
+        environment : list
+            list that the agent references for its environment vlaues
+        agents : list
+            list of agent class objects that the agent can refer to for other agents parameter values
+        elevation : list
+            List of nonchanging environmental height values 
+        sheep_dog : list
+            List of sheep_dog class objects
+        y : number
+            agent starting location on the y axis
+        x : TYPE
+            agent starting location on the x axis
+
+        Returns
+        -------
+        None.
+
+        """
         self.id = i
         if x == None:
             self.x = rn.randint(125,175) # Starting coordinate parameter
@@ -21,8 +58,16 @@ class Agent:
         self.living = 1
         self.eaten = False
         
-        
     def __str__(self):
+        """
+        Function that determines what is returned when classes string is called for as in the print function for example.
+
+        Returns
+        -------
+        String
+            A string of class parameters such as location, id and whether class is "alive"
+
+        """
         return ("id=" + str(self.id) + ", x=" + str(self.x) + ", y=" + str(self.y) + 
                 ", store =" + str(self.store) + ", count =" + str(self.count) + ", Living =" + str(self.living))
     
@@ -187,11 +232,21 @@ class Agent:
             
            
         
-    def eat(self): # can you make it eat what is left?
+    def eat(self):
+        """
+        Function to change the environment variable as if the sheep is eating it. It also contains the conditions for when the sheep have a
+        bowel movement
+
+        Returns
+        -------
+        None.
+
+        """
         if self.environment[self.y][self.x] >= 10:
             self.environment[self.y][self.x] -= 10
             self.store += 5 # half calories lost to life processes 
             '''
+            The sheep used to eat a little around their own pixel for a smoother visual but it caused values to go below zero.
             self.environment[self.y-1][self.x-1] -=3
             self.environment[self.y][self.x-1] -=3
             self.environment[self.y-1][self.x] -=3
@@ -218,6 +273,22 @@ class Agent:
             self.count += 1 # no. of bowel movements
 
     def survive(self, dog, lifespan):
+        """
+        This function changes the sheep store variable if the sheep dog is too close, as if the sheep dog is biting the sheep.
+        It also controls what conditions the sheep become dead in.
+
+        Parameters
+        ----------
+        dog : 1 item list
+            A list of the sheep dog class
+        lifespan : Number
+            variable of how many bowel movements before the sheep dies
+
+        Returns
+        -------
+        None.
+
+        """
         if self.distance_between(dog) < 8:
             self.store -= 20
         
@@ -227,11 +298,33 @@ class Agent:
             self.eaten = True
             self.x = 500
             self.y = 500
+
+# =============================================================================
+# Create dog class and define its functions
+# =============================================================================
 class Dog:
     def __init__(self, i, agents, elevation):
+        """
+        This is the init function for the dog class, it defines the initial parameters when a new object
+        of this class is created.
+
+        Parameters
+        ----------
+        i : Number
+            number used to assign id to dog
+        agents : list
+            list of agent class objects that the agent can refer to for other agents parameter values
+        elevation : list
+            List of nonchanging environmental height values 
+
+        Returns
+        -------
+        None.
+
+        """
         self.id = i
-        self.x = rn.randint(0, 299)
-        self.y = rn.randint(0, 299)
+        self.x = rn.randint(0, 100)
+        self.y = rn.randint(0, 100)
         self.elevation = elevation
         self.agents = agents
     
