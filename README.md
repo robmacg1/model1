@@ -2,10 +2,11 @@
 ## Sheep on a hill by Rory MacGregor
 File descriptions:
 1. This readme: Info on how to run the model or modify it if desired
-2. ABM.py: The model python script file - this is the file to run
-3. agentframework.py: This python script contains the sheep and dog classes and all their associated functions
-4. Env.csv: This is a grid of numbers that the model reads in and uses as the environment and elevation data
-5. Animaion.gif: This is an animation of an old version of the model that it used to output.
+2. licence.txt: licencing of this software - this software is licensed as is.
+3. ABM.py: The model python script file - this is the file to run
+4. agentframework.py: This python script contains the sheep and dog classes and all their associated functions
+5. Env.csv: This is a grid of numbers that the model reads in and uses as the environment and elevation data
+6. Animaion.gif: This is an animation of an old version of the model that it used to output.
 
 This is a model of sheep eating grass on a hill that are harassed to death by a sheep dog. When it runs a visual is created of the sheep as white dots on the background that represents a hillside. As they eat they get bigger until they are full and empty themselves on the hillside. Represented as a black dot is the sheep dog that chases the sheep as they run away.
 
