@@ -1,7 +1,7 @@
 # Agent Based Model Submission
 ## Sheep on a hill by Rory MacGregor
 File descriptions:
-1. This readme: Info on how to run the model or modify it if desired
+1. readme.md: Info on how to run the model or modify it if desired
 2. licence.txt: licencing of this software - this software is licensed as is.
 3. ABM.py: The model python script file - this is the file to run
 4. agentframework.py: This python script contains the sheep and dog classes and all their associated functions
